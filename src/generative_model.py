@@ -1,3 +1,5 @@
+import time
+from google.genai.errors import ServerError
 from google import genai 
 import os
 from dotenv import load_dotenv
@@ -6,18 +8,18 @@ from pathlib import Path
 
 
 class model:
-    def __init__(self,google_api_key = str | None):
+    def __init__(self, google_api_key: str | None = None):
         self.__google_api_key = google_api_key
 
     def create_client(self):
         self.client = genai.Client(api_key = self.__google_api_key)  
         return self.client 
 
-    def chat_input(self,chat = None,input_message = "hi,say any one sentence quote."):
+    def chat_input(self,chat = None,input_message = str):
         self.response = chat.send_message(input_message)
         return self.response
 
-def main(message:str):
+def main(message="hi,say a poem in one line") -> str:
     path = glob.glob("**/.env",recursive=True)
     if not path:
          raise FileNotFoundError(".env file not found,create one.")
@@ -34,9 +36,19 @@ def main(message:str):
         "max_output_tokens": 1024,
         "temperature": 0.4
     })
-    response = llm_model.chat_input(chat=chat,input_message=message)
-    return response
+    retries = 4
+    for attempt in range(retries):
+        try:
+            response = llm_model.chat_input(chat=chat,input_message=message)
+            return response.text
+        except ServerError as e:
+            if e.code == 503:
+                wait = 2 ** attempt
+                print(f"Model busy, retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                raise
+    raise RuntimeError("Model unavailable after retries")                        
+
 if __name__ == "__main__":
-    response = main("explian about kv cache in one line.")
-    print(response.text)
-    print(response)
+   main()
