@@ -14,9 +14,9 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
 
-from src.generative_model import main
+from src.generative_model import build_model,GenerativeModel
 
-MODEL= None
+MODEL : GenerativeModel | None = None
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -24,7 +24,7 @@ limiter = Limiter(key_func=get_remote_address)
 async def lifespan(app:FastAPI):
     global MODEL
     try:
-        MODEL = main()
+        MODEL = build_model()
         print("your chatbot has successfully started.")
     except Exception as e:
         print(f"error in starting your chatbot:{e}")
@@ -59,7 +59,7 @@ async def chat(request:Request,payload:chat_input):
         raise HTTPException(status_code= 500,detail="chatbot didn't start.")
 
     try:
-        response_output = await asyncio.to_thread(main,payload.input_messages)
+        response_output = await asyncio.to_thread(MODEL.send_message,payload.input_messages)
         return {"output_messages":str(response_output)}
     except Exception as e:
         traceback.print_exc()
