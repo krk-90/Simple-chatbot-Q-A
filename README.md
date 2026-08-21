@@ -101,6 +101,11 @@ Response:
   "time_stamp": "2026-08-20 10:43:22"
 }
 ```
+# Working Fastapi for locally:
 
 ![Chatbot demo](screen_shot/011.png)
 ![Chatbot demo](screen_shot/010.png)
+
+# Evalution of chatbot:
+
+![Chatbot demo](screen_shot/009.png)
