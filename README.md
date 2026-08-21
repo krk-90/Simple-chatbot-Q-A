@@ -13,12 +13,26 @@ A minimal FastAPI backend that wraps Google's Gemini API for chat, with conversa
 ## Project Structure
 
 ```
-.
+Simple-chatbot-Q-A/
+├── .env.example
+|-- license
+├── .gitignore
+├── README.md
+├── requirements.txt
+│
 ├── backend/
-│   └── router.py           # FastAPI app, endpoints, DB access
+│   ├── __init__.py
+│   └── router.py            # FastAPI app, /chat/, /status, /db-check
+│
 ├── src/
-│   └── generative_model.py # Gemini client wrapper
-└── .env                    # environment config (not committed)
+│   ├── __init__.py
+│   └── generative_model.py  # build_model(), GenerativeModel class
+│
+├── screen_shot/
+│        
+└── evals/
+    |--eval_report.json
+    └── evalution.py
 ```
 
 ## Requirements
